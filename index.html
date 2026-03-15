@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>SkillProbe — Assessment Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav" style="display:none">
+  <div class="nav-brand">Skill<span>Probe</span></div>
+  <div class="nav-tabs" id="navTabs"></div>
+  <div class="nav-right">
+    <span class="nav-role" id="navRole"></span>
+    <button class="btn-logout" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-logo">
+        <h1>SkillProbe</h1>
+        <p>Assessment Platform for Domain Experts</p>
+      </div>
+      <div class="login-tabs">
+        <button class="login-tab active" onclick="switchLoginTab('trainee')">Trainee Login</button>
+        <button class="login-tab" onclick="switchLoginTab('admin')">Admin Login</button>
+      </div>
+      <div id="traineeForm">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="traineeName" placeholder="Enter your full name"/>
+        </div>
+        <div class="form-group">
+          <label>Domain</label>
+          <select id="traineeDomain">
+            <option value="">Select your domain</option>
+            <option value="Data Engineering">Data Engineering</option>
+            <option value="QA">Quality Assurance (QA)</option>
+            <option value="BA">Business Analysis (BA)</option>
+            <option value="DevOps">DevOps</option>
+            <option value="MERN">MERN Stack</option>
+            <option value="PHP">PHP Development</option>
+            <option value="Python">Python</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Employee ID</label>
+          <input type="text" id="traineeId" placeholder="e.g. EMP-2024-001"/>
+        </div>
+        <button class="btn-primary" onclick="traineeLogin()">Start Assessment →</button>
+        <p class="err" id="traineeErr">Please fill all fields to continue.</p>
+      </div>
+      <div id="adminForm" style="display:none">
+        <div class="form-group">
+          <label>Admin Username</label>
+          <input type="text" id="adminUser" placeholder="admin"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="adminPass" placeholder="••••••••"/>
+        </div>
+        <button class="btn-primary" onclick="adminLogin()">Access Dashboard →</button>
+        <p class="err" id="adminErr">Invalid credentials. Default: admin / admin123</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINEE: HOME -->
+<div class="page" id="dashboardPage">
+  <div class="page-header">
+    <h1 class="page-title" id="dashWelcome">Welcome back!</h1>
+    <p class="page-sub" id="dashSub">Ready to test your knowledge?</p>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Domain</div><div class="stat-value accent" id="statDomain">—</div></div>
+    <div class="stat-card"><div class="stat-label">Questions</div><div class="stat-value cyan">50</div><div class="stat-sub">MCQ format</div></div>
+    <div class="stat-card"><div class="stat-label">Time Limit</div><div class="stat-value amber">30 min</div><div class="stat-sub">Strict timer</div></div>
+    <div class="stat-card"><div class="stat-label">Difficulty</div><div class="stat-value pink">Hard</div><div class="stat-sub">Domain-specific</div></div>
+  </div>
+  <div class="table-wrap" style="padding:28px">
+    <h3 style="font-size:18px;margin-bottom:8px">Ready to Begin?</h3>
+    <p style="color:var(--muted);font-size:14px;margin-bottom:20px">You will have 30 minutes to answer 50 domain-specific questions. Once started, the timer cannot be paused.</p>
+    <ul style="color:var(--muted);font-size:14px;line-height:2.2;margin:0 0 24px 18px">
+      <li>All questions are domain-specific and highly challenging</li>
+      <li>Navigate freely between questions using the side panel</li>
+      <li>Mark questions for review and return to them later</li>
+      <li>Submit before time expires — it auto-submits when the timer ends</li>
+    </ul>
+    <button class="btn-primary" style="max-width:220px" onclick="showPage('quizPage');startQuiz()">Begin Assessment →</button>
+  </div>
+</div>
+
+<!-- TRAINEE: QUIZ -->
+<div class="page" id="quizPage">
+  <div class="quiz-wrap">
+    <div class="quiz-header">
+      <div class="quiz-info">
+        <h2 id="quizDomainTitle">Domain Assessment</h2>
+        <p id="quizProgress">Question 1 of 50</p>
+      </div>
+      <div class="timer" id="timerBox">
+        <span class="timer-icon">⏱</span>
+        <span class="timer-val" id="timerDisplay">30:00</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:2%"></div></div>
+    <div class="quiz-layout">
+      <div>
+        <div class="q-card" id="questionCard"></div>
+      </div>
+      <div class="nav-panel">
+        <div class="nav-panel-title">Question Navigator</div>
+        <div class="q-grid" id="qGrid"></div>
+        <div class="nav-legend">
+          <div class="legend-item"><div class="legend-dot answered-dot"></div>Answered</div>
+          <div class="legend-item"><div class="legend-dot current-dot"></div>Current</div>
+          <div class="legend-item"><div class="legend-dot marked-dot"></div>Marked for review</div>
+          <div class="legend-item"><div class="legend-dot empty-dot"></div>Not visited</div>
+        </div>
+        <button class="nav-submit-btn" onclick="confirmSubmit()">Submit Assessment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRAINEE: RESULT -->
+<div class="page" id="resultPage">
+  <div style="max-width:700px;margin:0 auto">
+    <div class="result-hero">
+      <div class="result-score-ring" id="scoreRing">
+        <div class="result-score-inner">
+          <span class="result-pct" id="resultPct">0%</span>
+          <span class="result-grade" id="resultGrade">Score</span>
+        </div>
+      </div>
+      <h2 class="result-title" id="resultTitle">Assessment Complete!</h2>
+      <p class="result-sub" id="resultSub">Your results have been submitted to the admin dashboard.</p>
+      <div class="result-stats">
+        <div class="stat-card"><div class="stat-label">Correct</div><div class="stat-value green" id="resCorrect">0</div></div>
+        <div class="stat-card"><div class="stat-label">Incorrect</div><div class="stat-value red" id="resWrong">0</div></div>
+        <div class="stat-card"><div class="stat-label">Unattempted</div><div class="stat-value amber" id="resSkipped">0</div></div>
+      </div>
+    </div>
+    <div class="table-wrap" style="padding:24px;text-align:center">
+      <p style="color:var(--muted);font-size:14px;margin-bottom:16px">Your assessment has been recorded. The admin can view your detailed results in the dashboard.</p>
+      <button class="btn-primary" style="max-width:200px" onclick="logout()">Exit Platform</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN: DASHBOARD -->
+<div class="page" id="adminDashPage">
+  <div class="page-header">
+    <h1 class="page-title">Admin Dashboard</h1>
+    <p class="page-sub">Overview of all assessment activity across domains</p>
+  </div>
+  <div class="stats-grid" id="adminStats"></div>
+  <div class="table-wrap">
+    <div class="table-head">
+      <h3>Recent Submissions</h3>
+      <span class="badge blue" id="totalBadge">0 total</span>
+    </div>
+    <table id="adminTable">
+      <thead>
+        <tr>
+          <th>Trainee</th><th>Domain</th><th>Score</th>
+          <th>Correct/50</th><th>Time Taken</th><th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="adminTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADMIN: ALL RESULTS -->
+<div class="page" id="adminResultsPage">
+  <div class="page-header">
+    <h1 class="page-title">All Results</h1>
+    <p class="page-sub">Detailed view and filtering of all submissions</p>
+  </div>
+  <div class="filter-bar">
+    <input class="search-input" placeholder="Search by name or ID..." id="searchInput" oninput="filterResults()"/>
+    <select class="filter-select" id="domainFilter" onchange="filterResults()">
+      <option value="">All Domains</option>
+      <option>Data Engineering</option><option>QA</option><option>BA</option>
+      <option>DevOps</option><option>MERN</option><option>PHP</option><option>Python</option>
+    </select>
+    <select class="filter-select" id="statusFilter" onchange="filterResults()">
+      <option value="">All Scores</option>
+      <option value="pass">Pass (≥60%)</option>
+      <option value="fail">Fail (&lt;60%)</option>
+    </select>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Trainee</th><th>ID</th><th>Domain</th><th>Score %</th>
+          <th>Correct</th><th>Wrong</th><th>Skipped</th><th>Time</th><th>Result</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ADMIN: ANALYTICS -->
+<div class="page" id="adminAnalyticsPage">
+  <div class="page-header">
+    <h1 class="page-title">Analytics</h1>
+    <p class="page-sub">Domain-wise performance breakdown and statistics</p>
+  </div>
+  <div id="analyticsContent"></div>
+</div>
+
+<script src="js/questions.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
